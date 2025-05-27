@@ -1,0 +1,13 @@
+#game_state
+MENU = 0
+RODANDO = 1
+DIFICULDADE = 2
+RANKING = 3
+PERDEU = 4
+VITORIA = 5
+SAIR = -1
+
+#dificuldade
+FACIL = 1
+MEDIO = 1
+DIFICIL = 1
