@@ -108,7 +108,6 @@ while True:
     elif gamestate == RODANDO:
         janela.set_background_color((0, 5, 15))
 
-        Hud(player.vidas, janela).mostrar_hud()
         #Cuida da movimentação do player
         player.player_movimento(janela)
         #Se acaba as vidas o player vai para a tela de game over
@@ -123,10 +122,9 @@ while True:
             gamestate = enemies.inimigos_movimento(janela, player.y)
         #Checa as colisões e atualiza as pontuações
         pontuacao = enemies.update(player.tiros)
+        Hud(player.vidas, janela).mostrar_hud(pontuacao)
         enemies.atirar(janela)
         enemies.draw()
-
-        janela.draw_text(f"{pontuacao}", 0, 0, 50, (255, 255, 255), "Arial")
 
     elif gamestate == DIFICULDADE:
         janela.set_background_color((10, 0, 30))
@@ -146,6 +144,7 @@ while True:
         janela.set_background_color((0, 0, 0))
         gameover = Sprite("assets/gameover.png")
         gameover.set_position(meio('x', gameover), meio('y', gameover))
+        #pedir_nome(teclado)
         gameover.draw()
 
     elif gamestate == SAIR:

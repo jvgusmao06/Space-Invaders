@@ -33,10 +33,11 @@ class Player(Sprite):
 
     def update(self, enemies):
         for bala in enemies.tiros:
-            if self.collided(bala):
-                self.vidas -= 1
-                enemies.tiros.remove(bala)
-                enemies.atirou = False
+            if bala.y - bala.height >= self.y:
+                if self.collided(bala):
+                    self.vidas -= 1
+                    enemies.tiros.remove(bala)
+                    enemies.atirou = False
         
         if self.vidas <= 0:
             return PERDEU

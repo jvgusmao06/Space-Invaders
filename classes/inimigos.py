@@ -60,21 +60,19 @@ class Inimigos():
                 self.atirou = False
             bala.draw()
 
-
-
-
     def draw(self):
         for linha in self.inimigos:
             for inimigo in linha:
                 inimigo.draw()
     
     def update(self, tiros):
-        for linha in self.inimigos:
-            for inimigo in linha:
-                for bala in tiros:
-                   if inimigo.collided(bala):
-                        linha.remove(inimigo)
-                        tiros.remove(bala)
-                        self.pontuacao += 10
+        for bala in tiros:
+            #if bala.y > self.inimigos[0][0].y and bala.y < self.inimigos[4][2].y:
+                for linha in self.inimigos:
+                    for inimigo in linha:
+                        if inimigo.collided(bala):
+                            linha.remove(inimigo)
+                            tiros.remove(bala)
+                            self.pontuacao += 10
         return self.pontuacao
                     
