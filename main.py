@@ -59,8 +59,11 @@ Dificuldades_sprites["dificil"].set_position(meio('x',Dificuldades_sprites["difi
 #Variáveis importantes
 gamestate = MENU
 dificuldade = FACIL
-player = Player("assets/nave.png", dificuldade)
-player.set_position(meio("x", player), janela.height - player.height - 10)
+
+player = Player("assets/nave.png", dificuldade, janela)
+pos_x = (meio("x", player))
+pos_y = (janela.height - player.height - 10)
+player.set_position(pos_x, pos_y)
 
 #Função que detecta se um objeto foi clicado
 def mouse_menu (obj):
@@ -83,7 +86,7 @@ while True:
         enemies = Inimigos(pontuacao = 0, dificuldade = dificuldade)
 
         #Volta a posição do player e desespawna as balas quando volta para o menu
-        player = Player("assets/nave.png", dificuldade)
+        player = Player("assets/nave.png", dificuldade, janela)
         player.set_position(meio("x", player), janela.height - player.height - 10)
         player.tiros = []
 
@@ -98,24 +101,26 @@ while True:
                 gamestate = MENU
             elif mouse_menu((Menu_sprites["sair"])):
                 gamestate = SAIR
-    
-    #Quando o player mata todos os inimigos a matriz é recriada
-    elif gamestate == VITORIA:
-            enemies = Inimigos(pontuacao, dificuldade)
-            gamestate = RODANDO
 
     #Quando o jogo está rodando
     elif gamestate == RODANDO:
         janela.set_background_color((0, 5, 15))
 
         #Cuida da movimentação do player
-        player.player_movimento(janela)
+        player.player_movimento()
         #Se acaba as vidas o player vai para a tela de game over
-        gamestate = player.update(enemies)
+        gamestate = player.update(enemies, pos_x, pos_y)
         #Cuida do sitema de atirar do player
-        player.atirar(janela, teclado)
+        player.atirar(teclado)
+
         player.draw()
 
+        if not player.mortal:
+            player.contador_imortal += janela.delta_time()
+            intervalo = 0.4
+            if player.contador_imortal % (2 * intervalo) <= intervalo:
+                janela.set_background_color((0, 5, 15))   
+        
         #Se o player não perdeu todas as vidas
         if not gamestate == PERDEU:
             #Checa se os inimigos chegaram na posição do player e cuida das 
@@ -125,6 +130,17 @@ while True:
         Hud(player.vidas, janela).mostrar_hud(pontuacao)
         enemies.atirar(janela)
         enemies.draw()
+
+    elif gamestate == PERDEU:
+        janela.set_background_color((0, 0, 0))
+        gameover = Sprite("assets/gameover.png")
+        gameover.set_position(meio('x', gameover), meio('y', gameover))
+        gameover.draw()
+
+    #Quando o player mata todos os inimigos a matriz é recriada
+    elif gamestate == VITORIA:
+            enemies = Inimigos(pontuacao, dificuldade)
+            gamestate = RODANDO
 
     elif gamestate == DIFICULDADE:
         janela.set_background_color((10, 0, 30))
@@ -139,13 +155,6 @@ while True:
             elif mouse_menu(Dificuldades_sprites["dificil"]):
                 dificuldade = DIFICIL
                 gamestate = MENU 
-
-    elif gamestate == PERDEU:
-        janela.set_background_color((0, 0, 0))
-        gameover = Sprite("assets/gameover.png")
-        gameover.set_position(meio('x', gameover), meio('y', gameover))
-        #pedir_nome(teclado)
-        gameover.draw()
 
     elif gamestate == SAIR:
         janela.close()

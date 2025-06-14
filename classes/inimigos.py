@@ -3,6 +3,7 @@ from classes.tiros import*
 from constantes import*
 import random
 
+#tiros entre 1 e 2 segundos
 class Inimigos():
     def __init__(self, pontuacao, dificuldade):
         self.inimigos = []
@@ -20,38 +21,46 @@ class Inimigos():
             self.speed = 50 + dificuldade * 50
             self.pontuacao = pontuacao
             self.tiros = []
+            self.contador = 0
+            self.contador_max = random.randint(10, 20) / 10
             self.atirou = False
+            self.inimigo_esquerda = min(inimigo.x for linha in self.inimigos for inimigo in linha)
+            self.inimigo_direita = max(inimigo.x + inimigo.width for linha in self.inimigos for inimigo in linha)
+            self.inimigo_cima = min(inimigo.y for linha in self.inimigos for inimigo in linha)
+            self.inimigo_baixo = max(inimigo.y + inimigo.height for linha in self.inimigos for inimigo in linha)
 
     def inimigos_movimento(self, janela, limit):
         if not any(self.inimigos) or not any (linha for linha in self.inimigos):
             return VITORIA
-        inimigo_esquerda = min(inimigo.x for linha in self.inimigos for inimigo in linha)
-        inimigo_direita = max(inimigo.x + inimigo.width for linha in self.inimigos for inimigo in linha)
+        self.inimigo_esquerda = min(inimigo.x for linha in self.inimigos for inimigo in linha)
+        self.inimigo_direita = max(inimigo.x + inimigo.width for linha in self.inimigos for inimigo in linha)
 
         for linha in self.inimigos:
             for inimigo in linha:
                 inimigo.move_x(self.speed * janela.delta_time())
 
-        if (inimigo_esquerda <= 0 and self.speed < 0) or (inimigo_direita >= janela.width and self.speed > 0):
+        if (self.inimigo_esquerda <= 0 and self.speed < 0) or (self.inimigo_direita >= janela.width and self.speed > 0):
             self.speed *= -1
             for linha in self.inimigos:
                 for inimigo in linha:
                     inimigo.y += inimigo.height
 
-        inimigo_baixo = max(inimigo.y + inimigo.height for linha in self.inimigos for inimigo in linha)
+        self.inimigo_baixo = max(inimigo.y + inimigo.height for linha in self.inimigos for inimigo in linha)
 
-        if inimigo_baixo >= limit:
+        if self.inimigo_baixo >= limit:
             return PERDEU
         else:
             return RODANDO
 
     def atirar(self, janela):
-        if not self.atirou:
+        self.contador += janela.delta_time()
+        if self.contador >= self.contador_max:
             inimigos_ativos = [inimigo for linha in self.inimigos for inimigo in linha if inimigo]
             if inimigos_ativos:
                 inimigo = random.choice(inimigos_ativos)
                 self.tiros.append(Tiro("assets/bala.png", inimigo, 1))
-                self.atirou = True
+                self.contador = 0
+                self.contador_max = random.randint(10, 20)/10
 
         for bala in self.tiros:
             bala.bala_movimento(janela)
@@ -67,7 +76,7 @@ class Inimigos():
     
     def update(self, tiros):
         for bala in tiros:
-            #if bala.y > self.inimigos[0][0].y and bala.y < self.inimigos[4][2].y:
+            if (bala.y > self.inimigo_cima and bala.y < self.inimigo_baixo) and (bala.x > self.inimigo_esquerda and bala.x < self.inimigo_direita):
                 for linha in self.inimigos:
                     for inimigo in linha:
                         if inimigo.collided(bala):
