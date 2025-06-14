@@ -3,6 +3,7 @@ import pygame.mixer
 
 # Initizalizes pygame's modules
 pygame.init()
+pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=512)
 """Sound é uma classe de controle dos sons do jogo - efeitos, música"""
 class Sound():
     """ATENÇÃO! O arquivo passado deve ser .OGG!!! Se não pode gerar problemas."""
@@ -10,15 +11,12 @@ class Sound():
         self.loop = False
         self.sound_file = sound_file
         self.volume = 50
-        self.sound = self.load(sound_file)
+        self.load(sound_file)
         self.set_volume(self.volume)
-
-        # To reduce audio delay
-        pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=512)
 
     def load(self, sound_file):
         if(pygame.mixer):
-            return pygame.mixer.Sound(sound_file)
+            pygame.mixer.music.load(sound_file)
 
     """Value deve ser um valor entre 0 e 100"""
     def set_volume(self, value):
@@ -28,7 +26,7 @@ class Sound():
             value = 0
 
         self.volume = value
-        self.sound.set_volume(value/100)
+        pygame.mixer.music.set_volume(value/100)
 
     def increase_volume(self, value):
         self.set_volume(self.volume + value)
@@ -37,30 +35,30 @@ class Sound():
         self.set_volume(self.volume - value)
 
     def is_playing(self):
-        if(pygame.mixer.get_busy()):
+        if(pygame.mixer.music.get_busy()):
             return True
         else:
             return False
 
     def pause(self):
-        pygame.mixer.pause()
+        pygame.mixer.music.pause()
 
     def unpause(self):
-        pygame.mixer.unpause()
+        pygame.mixer.music.unpause()
 
     def play(self):
         if(self.loop):
-            self.sound.play(-1)
+            pygame.mixer.music.play(-1)
         else:
-            self.sound.play()
+            pygame.mixer.music.play()
 
     def stop(self):
-        self.sound.stop()
+        pygame.mixer.music.stop()
 
     def set_repeat(self, repeat):
         self.loop = repeat
 
     def fadeout(self, time_ms):
-       self.sound.fadeout(time)
+        pygame.mixer.music.fadeout(time)
 
 
