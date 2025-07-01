@@ -29,7 +29,7 @@ class Player(Sprite):
 
     def atirar(self, teclado):
         self.contador_tiros += self.janela.delta_time()
-        if teclado.key_pressed("space") and self.contador_tiros >= 1 * self.dificuldade:
+        if teclado.key_pressed("space") and self.contador_tiros >= 1:
             self.tiros.append(Tiro("assets/bala.png", self, -1))
             self.contador_tiros = 0
         for bala in self.tiros:

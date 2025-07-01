@@ -15,5 +15,5 @@ class Hud():
             fps = 1/self.janela.delta_time()
         else:
             fps = 0
-        self.janela.draw_text(f"{fps}", 0, 0, 50, (255, 255, 255), "Arial")
-        #self.janela.draw_text(f"{pontuacao}", 0, 0, 50, (255, 255, 255), "Arial")
+        #self.janela.draw_text(f"{fps}", 0, 0, 50, (255, 255, 255), "Arial")
+        self.janela.draw_text(f"{pontuacao}", 0, 0, 50, (255, 255, 255), "Arial")

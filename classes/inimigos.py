@@ -5,7 +5,8 @@ import random
 
 #tiros entre 1 e 2 segundos
 class Inimigos():
-    def __init__(self, pontuacao, dificuldade):
+    def __init__(self, dificuldade, vitorias, pontuacao):
+        #Criando a matriz de inimigos
         self.inimigos = []
         self.linha = 3
         self.coluna = 5
@@ -18,12 +19,24 @@ class Inimigos():
                 inimigo.set_position(linha * espaco_h, coluna * espaco_v)
                 linha_inimigos.append(inimigo)
             self.inimigos.append(linha_inimigos)
-            self.speed = 50 + dificuldade * 50
+
+            self.dificuldade = dificuldade
+
+            #Velocidade dos inimigos muda de acordo com a velocidade
+            self.speed = (75 + self.dificuldade * 25) + vitorias * 25
+            print(self.speed)
+            
+            #Pontuação do jogador
             self.pontuacao = pontuacao
+
+            #Lista de tiros desparados pelos inimigos
             self.tiros = []
-            self.contador = 0
-            self.contador_max = random.randint(10, 20) / 10
-            self.atirou = False
+            self.contador = 0 #Tempo desde o último tiro
+
+            #Tempo de recarga dos inimigos também muda de acordo com a dificuldade
+            self.contador_max = random.randint(10, 20) / (5 * self.dificuldade)
+
+            #Calcula o inimigo das extremidades afim de otimizações e colisão dos inimigos com as paredes
             self.inimigo_esquerda = min(inimigo.x for linha in self.inimigos for inimigo in linha)
             self.inimigo_direita = max(inimigo.x + inimigo.width for linha in self.inimigos for inimigo in linha)
             self.inimigo_cima = min(inimigo.y for linha in self.inimigos for inimigo in linha)
@@ -60,13 +73,12 @@ class Inimigos():
                 inimigo = random.choice(inimigos_ativos)
                 self.tiros.append(Tiro("assets/bala.png", inimigo, 1))
                 self.contador = 0
-                self.contador_max = random.randint(10, 20)/10
+                self.contador_max = random.randint(10, 20)/ (5 * self.dificuldade)
 
         for bala in self.tiros:
             bala.bala_movimento(janela)
             if bala.y >= janela.width:
                 self.tiros.remove(bala)
-                self.atirou = False
             bala.draw()
 
     def draw(self):
@@ -82,6 +94,11 @@ class Inimigos():
                         if inimigo.collided(bala):
                             linha.remove(inimigo)
                             tiros.remove(bala)
-                            self.pontuacao += 10
+                            if self.dificuldade == FACIL:
+                                self.pontuacao += 10
+                            elif self.dificuldade == MEDIO:
+                                self.pontuacao += 30
+                            else:
+                                self.pontuacao += 50
         return self.pontuacao
                     

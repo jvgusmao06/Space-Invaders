@@ -59,6 +59,7 @@ Dificuldades_sprites["dificil"].set_position(meio('x',Dificuldades_sprites["difi
 #Variáveis importantes
 gamestate = MENU
 dificuldade = FACIL
+vitorias = 0
 
 player = Player("assets/nave.png", dificuldade, janela)
 pos_x = (meio("x", player))
@@ -83,7 +84,7 @@ while True:
         janela.set_background_color((0, 50, 30))
 
         #Cria uma nova matriz de inimigos toda vez que volta pro menu
-        enemies = Inimigos(pontuacao = 0, dificuldade = dificuldade)
+        enemies = Inimigos(dificuldade, vitorias, pontuacao = 0)
 
         #Volta a posição do player e desespawna as balas quando volta para o menu
         player = Player("assets/nave.png", dificuldade, janela)
@@ -139,8 +140,11 @@ while True:
 
     #Quando o player mata todos os inimigos a matriz é recriada
     elif gamestate == VITORIA:
-            enemies = Inimigos(pontuacao, dificuldade)
+            vitorias += 1
+            enemies = Inimigos(dificuldade, vitorias, pontuacao)
+            player.vidas = 3
             gamestate = RODANDO
+            
 
     elif gamestate == DIFICULDADE:
         janela.set_background_color((10, 0, 30))

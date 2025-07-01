@@ -9,5 +9,5 @@ SAIR = -1
 
 #dificuldade
 FACIL = 1
-MEDIO = 1
-DIFICIL = 1
+MEDIO = 2
+DIFICIL = 3
