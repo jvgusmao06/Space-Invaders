@@ -1,0 +1,3 @@
+Vasc, 0
+Marcio, 100
+Marcio, 0

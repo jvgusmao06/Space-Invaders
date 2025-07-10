@@ -60,8 +60,10 @@ Dificuldades_sprites["dificil"].set_position(meio('x',Dificuldades_sprites["difi
 gamestate = MENU
 dificuldade = FACIL
 vitorias = 0
+nome_jogador = ""
+pontuacao_final = 0
 
-player = Player("assets/nave.png", dificuldade, janela)
+player = Player(dificuldade, janela)
 pos_x = (meio("x", player))
 pos_y = (janela.height - player.height - 10)
 player.set_position(pos_x, pos_y)
@@ -73,6 +75,33 @@ def mouse_menu (obj):
             janela.update()
         return True
     return False
+
+def salvar_pontucao(nome, pontuacao):
+    try:
+        with open('ranking.txt', 'a') as arquivo:
+            arquivo.write(f'{nome}, {pontuacao}\n')
+    except Exception as e:
+        print(f"Ocorreu um erro ao salvar o ranking: {e}")
+
+def carregar_ranking():
+    jogadores = []
+    try:
+        with open('ranking.txt', 'r') as arquivo:
+            for linha in arquivo:
+                partes = linha.strip().split(',')
+                if len(partes) == 2:
+                    nome = partes[0]
+                    try:
+                        pontos = int(partes[1])
+                        jogadores.append({'nome' : nome, 'pontos' : pontos})
+                    except ValueError:
+                        continue
+    except FileNotFoundError:
+        return []
+    
+    ranking_ordenado = sorted(jogadores, key=lambda jogador: jogador['pontos'], reverse=True)
+
+    return ranking_ordenado[:5]
 
 while True:
     #Vai para o menu ao clicar esc
@@ -87,7 +116,7 @@ while True:
         enemies = Inimigos(dificuldade, vitorias, pontuacao = 0)
 
         #Volta a posição do player e desespawna as balas quando volta para o menu
-        player = Player("assets/nave.png", dificuldade, janela)
+        player = Player(dificuldade, janela)
         player.set_position(meio("x", player), janela.height - player.height - 10)
         player.tiros = []
 
@@ -99,7 +128,7 @@ while True:
             elif mouse_menu(Menu_sprites["dificuldade"]):
                 gamestate = DIFICULDADE
             elif mouse_menu(Menu_sprites["ranking"]):
-                gamestate = MENU
+                gamestate = RANKING
             elif mouse_menu((Menu_sprites["sair"])):
                 gamestate = SAIR
 
@@ -135,8 +164,50 @@ while True:
     elif gamestate == PERDEU:
         janela.set_background_color((0, 0, 0))
         gameover = Sprite("assets/gameover.png")
-        gameover.set_position(meio('x', gameover), meio('y', gameover))
+        gameover.set_position(meio('x', gameover), 150)
         gameover.draw()
+
+        janela.draw_text("Digite seu nome:", 350, 420, 30, color=(255, 255, 255))
+
+        caixa_input_rect = pygame.Rect(350, 460, 400, 50)
+        pygame.draw.rect(janela.screen, (255, 255, 255), caixa_input_rect, 2)
+
+        janela.draw_text(nome_jogador, caixa_input_rect.x + 10, caixa_input_rect.y + 10, 30, color=(255, 255, 255))
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN: # Se pressionar ENTER
+                    if nome_jogador: # Só salva se o nome não for vazio
+                        salvar_pontucao(nome_jogador, pontuacao)
+                        nome_jogador = "" # Limpa o nome para a próxima vez
+                        gamestate = MENU # Volta para o menu
+                elif event.key == pygame.K_BACKSPACE:
+                    nome_jogador = nome_jogador[:-1] # Apaga o último caractere
+                else:
+                    if len(nome_jogador) < 12: # Limita o tamanho do nome
+                        nome_jogador += event.unicode # Adiciona a letra digitada
+
+    elif gamestate == RANKING:
+        janela.set_background_color((20, 20, 80))
+
+        janela.draw_text("Top 5 Jogadores", 50, 50, 50, color=(255, 255, 0))
+
+        top_jogadores = carregar_ranking()
+
+        if not top_jogadores:
+            janela.draw_text("Ninguém no ranking ainda!", 50, 250, 30, color=(255, 255, 255))
+        else:
+            y_pos = 150
+            for i, jogador in enumerate(top_jogadores):
+                texto_nome = f"{i + 1}. {jogador['nome']}"
+                texto_pontos = str(jogador['pontos'])
+
+                janela.draw_text(texto_nome, 100, y_pos, 35, color=(255, 255, 255))
+                janela.draw_text(texto_pontos, 600, y_pos, 35, color=(0, 255, 0))
+                y_pos += 50
 
     #Quando o player mata todos os inimigos a matriz é recriada
     elif gamestate == VITORIA:

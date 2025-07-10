@@ -5,8 +5,8 @@ from constantes import*
 
 #Classe que cuida de todas propriedades do player
 class Player(Sprite):
-    def __init__(self, imagem_caminho, dificuldade, janela):
-        super().__init__(imagem_caminho)
+    def __init__(self, dificuldade, janela):
+        super().__init__("assets/nave.png")
         self.contador_tiros = 1
         self.tiros = []
 

@@ -24,7 +24,6 @@ class Inimigos():
 
             #Velocidade dos inimigos muda de acordo com a velocidade
             self.speed = (75 + self.dificuldade * 25) + vitorias * 25
-            print(self.speed)
             
             #Pontuação do jogador
             self.pontuacao = pontuacao
@@ -71,7 +70,7 @@ class Inimigos():
             inimigos_ativos = [inimigo for linha in self.inimigos for inimigo in linha if inimigo]
             if inimigos_ativos:
                 inimigo = random.choice(inimigos_ativos)
-                self.tiros.append(Tiro("assets/bala.png", inimigo, 1))
+                self.tiros.append(Tiro("assets/bala1.png", inimigo, 1))
                 self.contador = 0
                 self.contador_max = random.randint(10, 20)/ (5 * self.dificuldade)
 
