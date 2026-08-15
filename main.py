@@ -62,8 +62,9 @@ dificuldade = FACIL
 vitorias = 0
 nome_jogador = ""
 pontuacao_final = 0
+player_quente = 0
 
-player = Player(dificuldade, janela)
+player = Player("assets/nave.png", dificuldade, janela)
 pos_x = (meio("x", player))
 pos_y = (janela.height - player.height - 10)
 player.set_position(pos_x, pos_y)
@@ -116,7 +117,7 @@ while True:
         enemies = Inimigos(dificuldade, vitorias, pontuacao = 0)
 
         #Volta a posição do player e desespawna as balas quando volta para o menu
-        player = Player(dificuldade, janela)
+        player = Player("assets/nave.png", dificuldade, janela)
         player.set_position(meio("x", player), janela.height - player.height - 10)
         player.tiros = []
 
@@ -136,20 +137,44 @@ while True:
     elif gamestate == RODANDO:
         janela.set_background_color((0, 5, 15))
 
+        if player.nave == 0 and player_quente != 0 and player.mortal:
+            x = player.x
+            y = player.y
+            vidas = player.vidas
+            player = Player("assets/nave.png", dificuldade, janela, vidas, player.nave, player.contador_quente)
+            player.set_position(x, y)
+            player_quente = 0
+
+        elif player.nave == 1 and player_quente < 1:
+            x = player.x
+            y = player.y
+            vidas = player.vidas
+            player = Player("assets/nave_quente.png", dificuldade, janela, vidas, player.nave, player.contador_quente)
+            player.set_position(x, y)
+            player_quente = 1
+
+        elif player.nave == 2 and player_quente != 2:
+            x = player.x
+            y = player.y
+            vidas = player.vidas
+            player = Player("assets/nave_quente1.png", dificuldade, janela, vidas, player.nave, player.contador_quente)
+            player.set_position(x, y)
+            player_quente = 2
+
         #Cuida da movimentação do player
         player.player_movimento()
         #Se acaba as vidas o player vai para a tela de game over
         gamestate = player.update(enemies, pos_x, pos_y)
         #Cuida do sitema de atirar do player
-        player.atirar(teclado)
-
+        player.atirar(teclado, pos_x, pos_y)
         player.draw()
+        print(player_quente)
 
         if not player.mortal:
             player.contador_imortal += janela.delta_time()
             intervalo = 0.4
             if player.contador_imortal % (2 * intervalo) <= intervalo:
-                janela.set_background_color((0, 5, 15))   
+                janela.set_background_color((0, 5, 15))
         
         #Se o player não perdeu todas as vidas
         if not gamestate == PERDEU:
